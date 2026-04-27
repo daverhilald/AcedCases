@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deck Viewer - AcedCases</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="viewer.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- PDF.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index.html" class="logo">AcedCases</a>
+                <div class="nav-links">
+                    <a href="library.html">Library</a>
+                    <a href="library.html#colleges">Colleges</a>
+                    <a href="library.html#topics">Topics</a>
+                    <a href="library.html#corporate">Corporate</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Viewer Container -->
+    <div class="viewer-container">
+        <!-- PDF Viewer Section -->
+        <div class="pdf-viewer-section">
+            <div class="viewer-controls">
+                <div class="controls-left">
+                    <button id="prevPage" class="control-btn">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Previous
+                    </button>
+                    <span class="page-info">
+                        Page <span id="currentPage">1</span> of <span id="totalPages">--</span>
+                    </span>
+                    <button id="nextPage" class="control-btn">
+                        Next
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="controls-right">
+                    <button id="zoomOut" class="control-btn icon-btn" title="Zoom Out">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/>
+                            <path d="M6 9H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <span class="zoom-level" id="zoomLevel">100%</span>
+                    <button id="zoomIn" class="control-btn icon-btn" title="Zoom In">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/>
+                            <path d="M6 9H12M9 6V12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="pdf-canvas-container">
+                <canvas id="pdfCanvas"></canvas>
+                <div id="loadingMessage" class="loading-message">Loading deck...</div>
+            </div>
+        </div>
+
+        <!-- Credits & Info Section -->
+        <div class="deck-info-section">
+            <div class="info-card">
+                <div class="info-header">
+                    <h1 class="deck-title-main" id="deckTitle">Loading...</h1>
+                    <div class="deck-badges">
+                        <span class="badge badge-category" id="categoryBadge">Strategy</span>
+                        <span class="badge badge-year" id="yearBadge">2024</span>
+                    </div>
+                </div>
+
+                <div class="competition-info">
+                    <h3 class="info-section-title">Competition</h3>
+                    <p class="competition-name" id="competitionName">--</p>
+                </div>
+
+                <div class="team-info">
+                    <h3 class="info-section-title">Team Credits</h3>
+                    <div class="team-details">
+                        <p class="team-name" id="teamName">--</p>
+                        <p class="team-college" id="teamCollege">--</p>
+                    </div>
+                    <div class="team-members" id="teamMembers">
+                        <!-- Team members will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="deck-description">
+                    <h3 class="info-section-title">About This Deck</h3>
+                    <p id="deckDescription">--</p>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="library.html" class="btn btn-secondary btn-full">← Back to Library</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3 class="logo">AcedCases</h3>
+                    <p>Empowering case competition enthusiasts worldwide</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Platform</h4>
+                        <a href="library.html">Deck Library</a>
+                        <a href="about.html">About Us</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Categories</h4>
+                        <a href="library.html#colleges">Colleges</a>
+                        <a href="library.html#topics">Topics</a>
+                        <a href="library.html#corporate">Corporate</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 AcedCases. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="viewer.js"></script>
+</body>
+</html>

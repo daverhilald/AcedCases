@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deck Library - AcedCases</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="library.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index.html" class="logo">AcedCases</a>
+                <div class="nav-links">
+                    <a href="library.html">Library</a>
+                    <a href="library.html#colleges">Colleges</a>
+                    <a href="library.html#topics">Topics</a>
+                    <a href="library.html#corporate">Corporate</a>
+                    <a href="about.html">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Library Header -->
+    <section class="library-header">
+        <div class="container">
+            <h1 class="page-title">Deck Library</h1>
+            <p class="page-subtitle">Explore winning case competition strategies from top teams</p>
+            
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search by competition, team, or topic..." class="search-input">
+                <button class="search-button">Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters and Content -->
+    <section class="library-content">
+        <div class="container">
+            <div class="library-layout">
+                <!-- Sidebar Filters -->
+                <aside class="filters-sidebar">
+                    <div class="filter-section">
+                        <h3 class="filter-title">Categories</h3>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input type="checkbox" name="category" value="all" checked>
+                                <span>All Decks</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="category" value="college">
+                                <span>College Competitions</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="category" value="corporate">
+                                <span>Corporate Competitions</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <h3 class="filter-title">Topics</h3>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input type="checkbox" name="topic" value="strategy">
+                                <span>Strategy</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="topic" value="marketing">
+                                <span>Marketing</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="topic" value="finance">
+                                <span>Finance</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="topic" value="operations">
+                                <span>Operations</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="topic" value="analytics">
+                                <span>Analytics</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <h3 class="filter-title">Year</h3>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input type="checkbox" name="year" value="2024">
+                                <span>2024</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="year" value="2023">
+                                <span>2023</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="year" value="2022">
+                                <span>2022</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="clear-filters">Clear All Filters</button>
+                </aside>
+
+                <!-- Deck Grid -->
+                <div class="decks-container">
+                    <div class="results-header">
+                        <p class="results-count"><span id="deckCount">10</span> decks found</p>
+                        <select class="sort-select">
+                            <option value="recent">Most Recent</option>
+                            <option value="name">Competition Name</option>
+                            <option value="team">Team Name</option>
+                        </select>
+                    </div>
+
+                    <div class="deck-grid" id="deckGrid">
+                        <!-- Deck cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3 class="logo">AcedCases</h3>
+                    <p>Empowering case competition enthusiasts worldwide</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Platform</h4>
+                        <a href="library.html">Deck Library</a>
+                        <a href="about.html">About Us</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Categories</h4>
+                        <a href="library.html#colleges">Colleges</a>
+                        <a href="library.html#topics">Topics</a>
+                        <a href="library.html#corporate">Corporate</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 AcedCases. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="library.js"></script>
+</body>
+</html>
