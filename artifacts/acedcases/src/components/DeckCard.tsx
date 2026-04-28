@@ -1,20 +1,10 @@
 import { Link } from "wouter";
 import type { Deck } from "@/data/decks";
+import { DeckThumbnail } from "./DeckThumbnail";
 
 interface Props {
   deck: Deck;
   variant?: "dark" | "paper";
-}
-
-function monogram(team: string): string {
-  return team
-    .replace(/^Team\s+/i, "")
-    .split(/\s+/)
-    .map((w) => w[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
 }
 
 export function DeckCard({ deck, variant = "dark" }: Props) {
@@ -27,7 +17,7 @@ export function DeckCard({ deck, variant = "dark" }: Props) {
   return (
     <Link
       href={`/viewer/${deck.id}`}
-      className="group block transition-colors"
+      className="group block transition-colors deck-card"
       style={{
         background: surface,
         borderTop: `1px solid ${rule}`,
@@ -36,23 +26,12 @@ export function DeckCard({ deck, variant = "dark" }: Props) {
       }}
       data-testid={`card-deck-${deck.id}`}
     >
-      <article className="grid gap-5" style={{ gridTemplateColumns: "56px 1fr" }}>
-        <div
-          className="flex items-start justify-center pt-1"
-          style={{
-            fontFamily: "var(--app-font-heading)",
-            fontStyle: "italic",
-            fontWeight: 500,
-            fontSize: 22,
-            color: "var(--accent)",
-            letterSpacing: "-0.02em",
-          }}
-          data-testid={`mono-${deck.id}`}
-        >
-          {monogram(deck.team)}
+      <article className="deck-card-grid">
+        <div className="deck-card-thumb">
+          <DeckThumbnail deck={deck} width={280} className="deck-thumb-svg" />
         </div>
 
-        <div>
+        <div className="deck-card-meta">
           <div className="flex items-baseline gap-3 mb-2 flex-wrap">
             <span className="eyebrow-muted" style={{ color: muted }}>
               {deck.year}
@@ -95,6 +74,32 @@ export function DeckCard({ deck, variant = "dark" }: Props) {
           </p>
         </div>
       </article>
+
+      <style>{`
+        .deck-card-grid {
+          display: grid;
+          gap: 28px;
+          align-items: center;
+          grid-template-columns: 280px 1fr;
+        }
+        .deck-card .deck-thumb-svg {
+          transition: transform 0.25s ease;
+          width: 100%;
+          height: auto;
+        }
+        .deck-card:hover .deck-thumb-svg {
+          transform: translateY(-2px);
+        }
+        @media (max-width: 720px) {
+          .deck-card-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+          }
+          .deck-card-thumb {
+            max-width: 360px;
+          }
+        }
+      `}</style>
     </Link>
   );
 }

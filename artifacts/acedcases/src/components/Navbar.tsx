@@ -35,6 +35,7 @@ export function Navbar({ variant = "dark" }: Props) {
                 fontWeight: 500,
                 fontSize: 22,
                 letterSpacing: "-0.02em",
+                fontStyle: "italic",
                 color: textColor,
               }}
             >
