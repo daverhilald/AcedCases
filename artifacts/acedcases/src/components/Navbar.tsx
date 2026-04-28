@@ -8,6 +8,7 @@ export function Navbar({ variant = "dark" }: Props) {
   const [location] = useLocation();
   const onLibrary = location === "/library";
   const onAbout = location === "/about";
+  const onSubmit = location === "/submit";
 
   const isPaper = variant === "paper";
   const textColor = isPaper ? "var(--ink)" : "var(--on-bg)";
@@ -77,6 +78,20 @@ export function Navbar({ variant = "dark" }: Props) {
               <NavLink href="/about" testId="link-nav-about" color={textColor}>
                 About
               </NavLink>
+            )}
+            {!onSubmit && (
+              <Link
+                href="/submit"
+                className="text-[14px] tracking-wide link-edit transition-opacity hover:opacity-80"
+                style={{
+                  fontFamily: "var(--app-font-sans)",
+                  fontWeight: 500,
+                  color: textColor,
+                }}
+                data-testid="link-nav-submit"
+              >
+                Submit
+              </Link>
             )}
           </div>
         </div>
