@@ -1,10 +1,11 @@
 import { Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { DeckThumbnail } from "@/components/DeckThumbnail";
 import { decksData } from "@/data/decks";
 
 export default function Home() {
-  const recent = [...decksData].sort((a, b) => b.year.localeCompare(a.year)).slice(0, 6);
+  const recent = [...decksData].sort((a, b) => b.year.localeCompare(a.year)).slice(0, 3);
   const collegeCount = decksData.filter((d) => d.category === "college").length;
   const corporateCount = decksData.filter((d) => d.category === "corporate").length;
   const competitions = new Set(decksData.map((d) => d.competition.replace(/\s+\d{4}.*$/, ""))).size;
@@ -67,83 +68,89 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Recent additions */}
+      {/* Just added — three-up grid */}
       <section className="py-20 md:py-28" data-testid="section-recent">
         <div className="container-acm">
-          <div className="grid gap-12 md:grid-cols-[200px_1fr] mb-10">
+          <div
+            className="flex items-baseline justify-between gap-6 flex-wrap mb-12 pb-6"
+            style={{ borderBottom: "1px solid var(--rule)" }}
+          >
             <div>
-              <p className="eyebrow-muted mb-3">Index</p>
+              <p className="eyebrow mb-3">Just added</p>
               <h2 className="display-3" data-testid="text-recent-title">
-                Recent additions
+                Three new decks{" "}
+                <span style={{ fontStyle: "italic" }}>worth your time.</span>
               </h2>
             </div>
-            <div className="self-end">
-              <p
-                style={{
-                  fontFamily: "var(--app-font-serif)",
-                  fontSize: 16,
-                  color: "var(--on-bg-muted)",
-                  lineHeight: 1.6,
-                  fontStyle: "italic",
-                }}
-              >
-                {decksData.length} decks · {competitions} competitions ·{" "}
-                {collegeCount} from colleges, {corporateCount} from corporate finals.
-              </p>
-            </div>
+            <p
+              className="text-[13px]"
+              style={{
+                fontFamily: "var(--app-font-sans)",
+                color: "var(--on-bg-muted)",
+              }}
+            >
+              {decksData.length} decks · {competitions} competitions ·{" "}
+              {collegeCount} college, {corporateCount} corporate
+            </p>
           </div>
 
-          <div data-testid="list-recent-decks">
+          <div className="grid gap-10 md:grid-cols-3" data-testid="grid-recent-decks">
             {recent.map((deck) => (
               <Link
                 key={deck.id}
                 href={`/viewer/${deck.id}`}
-                className="block py-6 group transition-colors"
-                style={{ borderTop: "1px solid var(--rule)" }}
-                data-testid={`row-deck-${deck.id}`}
+                className="group block recent-card"
+                data-testid={`card-recent-${deck.id}`}
               >
-                <article
-                  className="grid gap-6 items-baseline"
-                  style={{ gridTemplateColumns: "70px 1fr auto" }}
-                >
+                <div className="mb-5 overflow-hidden">
+                  <DeckThumbnail
+                    deck={deck}
+                    width={400}
+                    className="recent-thumb-svg"
+                  />
+                </div>
+                <div className="flex items-baseline gap-2 mb-2 flex-wrap">
                   <span className="eyebrow-muted">{deck.year}</span>
-                  <div>
-                    <h3
-                      className="mb-1.5 transition-opacity group-hover:opacity-70"
-                      style={{
-                        fontFamily: "var(--app-font-heading)",
-                        fontWeight: 500,
-                        fontSize: "clamp(18px, 1.6vw, 22px)",
-                        letterSpacing: "-0.01em",
-                        lineHeight: 1.25,
-                        color: "var(--on-bg)",
-                      }}
-                    >
-                      {deck.title}
-                    </h3>
-                    <p
-                      style={{
-                        fontFamily: "var(--app-font-sans)",
-                        fontSize: 13,
-                        color: "var(--on-bg-muted)",
-                      }}
-                    >
-                      {deck.team} · {deck.college} · {deck.competition}
-                    </p>
-                  </div>
                   <span
-                    className="hidden md:inline transition-transform group-hover:translate-x-1"
-                    style={{ color: "var(--accent)", fontSize: 14 }}
+                    style={{
+                      color: "var(--on-bg-muted)",
+                      fontSize: 11,
+                    }}
                   >
-                    →
+                    ·
                   </span>
-                </article>
+                  <span className="eyebrow-muted">{deck.topics[0]}</span>
+                </div>
+                <h3
+                  className="mb-2 transition-opacity group-hover:opacity-80"
+                  style={{
+                    fontFamily: "var(--app-font-heading)",
+                    fontWeight: 500,
+                    fontSize: "clamp(18px, 1.4vw, 22px)",
+                    letterSpacing: "-0.01em",
+                    lineHeight: 1.25,
+                    color: "var(--on-bg)",
+                  }}
+                  data-testid={`text-recent-title-${deck.id}`}
+                >
+                  {deck.title}
+                </h3>
+                <p
+                  style={{
+                    fontFamily: "var(--app-font-sans)",
+                    fontSize: 13,
+                    color: "var(--on-bg-muted)",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  <span style={{ color: "var(--on-bg)" }}>{deck.team}</span>
+                  <span> · {deck.college}</span>
+                </p>
               </Link>
             ))}
-            <div style={{ borderTop: "1px solid var(--rule)" }} />
           </div>
 
-          <div className="mt-10">
+          <div className="mt-14">
             <Link
               href="/library"
               className="link-edit text-[14px]"
@@ -157,6 +164,17 @@ export default function Home() {
               See all {decksData.length} decks in the library →
             </Link>
           </div>
+
+          <style>{`
+            .recent-card .recent-thumb-svg {
+              width: 100%;
+              height: auto;
+              transition: transform 0.3s ease;
+            }
+            .recent-card:hover .recent-thumb-svg {
+              transform: translateY(-3px);
+            }
+          `}</style>
         </div>
       </section>
 
