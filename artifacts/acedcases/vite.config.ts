@@ -37,10 +37,18 @@ export default defineConfig({
     dedupe: ["react", "react-dom"],
   },
   root: path.resolve(import.meta.dirname),
-  build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
-    emptyOutDir: true,
-  },
+ build: {
+  outDir: path.resolve(import.meta.dirname, "dist/public"),
+  emptyOutDir: true,
+  sourcemap: false,
+  rollupOptions: {
+    onwarn(warning, warn) {
+      // Ignore sourcemap warnings
+      if (warning.code === 'SOURCEMAP_ERROR') return;
+      warn(warning);
+    }
+  }
+},
   server: {
     port,
     strictPort: false,
