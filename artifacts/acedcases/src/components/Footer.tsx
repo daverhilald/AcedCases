@@ -57,11 +57,11 @@ export function Footer() {
               Colleges
             </Link>
             <Link
-              href="/library?topic=strategy"
+              href="/library?domain=strategy"
               className="block text-secondary-muted text-sm mb-3 hover:text-cyan transition-colors"
-              data-testid="link-footer-topics"
+              data-testid="link-footer-domain"
             >
-              Topics
+              Domain
             </Link>
             <Link
               href="/library?category=corporate"

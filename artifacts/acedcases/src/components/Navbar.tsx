@@ -11,13 +11,8 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const links: Array<{ href: string; label: string }> = [
-    { href: "/library", label: "Library" },
-    { href: "/library?category=college", label: "Colleges" },
-    { href: "/library?topic=strategy", label: "Topics" },
-    { href: "/library?category=corporate", label: "Corporate" },
-    { href: "/about", label: "About" },
-  ];
+  const onLibrary = location === "/library";
+  const onAbout = location === "/about";
 
   return (
     <nav
@@ -40,33 +35,26 @@ export function Navbar() {
             AcedCases
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
-            {links.map((l) => {
-              const active =
-                (l.href === "/library" && location === "/library") ||
-                (l.href === "/about" && location === "/about");
-              return (
-                <Link
-                  key={l.href + l.label}
-                  href={l.href}
-                  className={`relative text-[15px] font-medium transition-colors hover:text-cyan ${
-                    active ? "text-cyan" : "text-white"
-                  }`}
-                  data-testid={`link-nav-${l.label.toLowerCase()}`}
-                >
-                  {l.label}
-                </Link>
-              );
-            })}
+          <div className="flex items-center gap-6 sm:gap-8">
+            {!onLibrary && (
+              <Link
+                href="/library"
+                className="text-[15px] font-medium text-white transition-colors hover:text-cyan"
+                data-testid="link-nav-library"
+              >
+                Library
+              </Link>
+            )}
+            {!onAbout && (
+              <Link
+                href="/about"
+                className="text-[15px] font-medium text-white transition-colors hover:text-cyan"
+                data-testid="link-nav-about"
+              >
+                About
+              </Link>
+            )}
           </div>
-
-          <Link
-            href="/library"
-            className="md:hidden text-sm font-semibold text-cyan"
-            data-testid="link-mobile-library"
-          >
-            Library →
-          </Link>
         </div>
       </div>
     </nav>

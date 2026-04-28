@@ -5,7 +5,7 @@ import { Footer } from "@/components/Footer";
 import { DeckCard } from "@/components/DeckCard";
 import { decksData, type DeckCategory, type DeckTopic } from "@/data/decks";
 
-const TOPICS: DeckTopic[] = ["strategy", "marketing", "finance", "operations", "analytics"];
+const DOMAINS: DeckTopic[] = ["strategy", "marketing", "finance", "operations", "analytics"];
 const YEARS = ["2024", "2023", "2022"];
 
 type SortOpt = "recent" | "name" | "team";
@@ -23,23 +23,23 @@ export default function Library() {
   const params = useQueryParams();
 
   const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
   const [categoryAll, setCategoryAll] = useState(true);
   const [categories, setCategories] = useState<Set<DeckCategory>>(new Set());
-  const [topics, setTopics] = useState<Set<DeckTopic>>(new Set());
+  const [domains, setDomains] = useState<Set<DeckTopic>>(new Set());
   const [years, setYears] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<SortOpt>("recent");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Apply URL params on mount
   useEffect(() => {
     const cat = params.get("category") as DeckCategory | null;
-    const topic = params.get("topic") as DeckTopic | null;
+    const domain = (params.get("domain") ?? params.get("topic")) as DeckTopic | null;
     if (cat) {
       setCategoryAll(false);
       setCategories(new Set([cat]));
     }
-    if (topic) {
-      setTopics(new Set([topic]));
+    if (domain) {
+      setDomains(new Set([domain]));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -65,11 +65,11 @@ export default function Library() {
     if (next.size === 0) setCategoryAll(true);
   };
 
-  const handleTopic = (t: DeckTopic, checked: boolean) => {
-    const next = new Set(topics);
+  const handleDomain = (t: DeckTopic, checked: boolean) => {
+    const next = new Set(domains);
     if (checked) next.add(t);
     else next.delete(t);
-    setTopics(next);
+    setDomains(next);
   };
 
   const handleYear = (y: string, checked: boolean) => {
@@ -81,20 +81,22 @@ export default function Library() {
 
   const clearFilters = () => {
     setSearch("");
-    setSearchInput("");
     setCategoryAll(true);
     setCategories(new Set());
-    setTopics(new Set());
+    setDomains(new Set());
     setYears(new Set());
     setSort("recent");
   };
+
+  const activeFilterCount =
+    (categoryAll ? 0 : categories.size) + domains.size + years.size;
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
     let result = decksData.filter((deck) => {
       const categoryMatch = categoryAll || categories.has(deck.category);
-      const topicMatch =
-        topics.size === 0 || deck.topics.some((t) => topics.has(t));
+      const domainMatch =
+        domains.size === 0 || deck.topics.some((t) => domains.has(t));
       const yearMatch = years.size === 0 || years.has(deck.year);
       const searchMatch =
         !q ||
@@ -103,7 +105,7 @@ export default function Library() {
         deck.college.toLowerCase().includes(q) ||
         deck.competition.toLowerCase().includes(q) ||
         deck.tags.some((tag) => tag.toLowerCase().includes(q));
-      return categoryMatch && topicMatch && yearMatch && searchMatch;
+      return categoryMatch && domainMatch && yearMatch && searchMatch;
     });
 
     if (sort === "recent") {
@@ -116,113 +118,150 @@ export default function Library() {
       result = [...result].sort((a, b) => a.team.localeCompare(b.team));
     }
     return result;
-  }, [search, categoryAll, categories, topics, years, sort]);
+  }, [search, categoryAll, categories, domains, years, sort]);
+
+  const filterPanel = (
+    <>
+      <FilterGroup title="Categories">
+        <FilterCheckbox
+          label="All Decks"
+          checked={categoryAll}
+          onChange={handleCategoryAll}
+          testId="filter-cat-all"
+        />
+        <FilterCheckbox
+          label="College Competitions"
+          checked={categories.has("college")}
+          onChange={(c) => handleCategory("college", c)}
+          testId="filter-cat-college"
+        />
+        <FilterCheckbox
+          label="Corporate Competitions"
+          checked={categories.has("corporate")}
+          onChange={(c) => handleCategory("corporate", c)}
+          testId="filter-cat-corporate"
+        />
+      </FilterGroup>
+
+      <FilterGroup title="Domain">
+        {DOMAINS.map((t) => (
+          <FilterCheckbox
+            key={t}
+            label={t.charAt(0).toUpperCase() + t.slice(1)}
+            checked={domains.has(t)}
+            onChange={(c) => handleDomain(t, c)}
+            testId={`filter-domain-${t}`}
+          />
+        ))}
+      </FilterGroup>
+
+      <FilterGroup title="Year">
+        {YEARS.map((y) => (
+          <FilterCheckbox
+            key={y}
+            label={y}
+            checked={years.has(y)}
+            onChange={(c) => handleYear(y, c)}
+            testId={`filter-year-${y}`}
+          />
+        ))}
+      </FilterGroup>
+
+      <button
+        onClick={clearFilters}
+        className="w-full py-3 rounded-lg font-semibold text-sm border-2 transition-colors text-[var(--electric-blue)] hover:text-[var(--bright-cyan)] hover:border-[var(--bright-cyan)] hover:bg-[rgba(59,130,246,0.1)]"
+        style={{ borderColor: "var(--electric-blue)" }}
+        data-testid="button-clear-filters"
+      >
+        Clear All Filters
+      </button>
+    </>
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-navy">
       <Navbar />
 
-      <section className="bg-dark-gray border-b border-brand py-16" data-testid="section-library-header">
+      <section
+        className="bg-dark-gray border-b border-brand py-12 md:py-16"
+        data-testid="section-library-header"
+      >
         <div className="container-acm">
           <h1
-            className="text-5xl md:text-6xl font-extrabold mb-3 text-gradient"
+            className="text-4xl md:text-6xl font-extrabold mb-3 text-gradient"
             style={{ fontFamily: "var(--app-font-heading)" }}
             data-testid="text-page-title"
           >
             Deck Library
           </h1>
-          <p className="text-lg text-secondary-muted mb-8">
+          <p className="text-base md:text-lg text-secondary-muted mb-6 md:mb-8">
             Explore winning case competition strategies from top teams.
           </p>
-          <div className="max-w-2xl mx-auto flex gap-3 flex-wrap sm:flex-nowrap">
+          <div className="max-w-2xl mx-auto relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-muted pointer-events-none">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="2" />
+                <path d="M13.5 13.5L17 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </span>
             <input
               type="search"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") setSearch(searchInput);
-              }}
-              placeholder="Search by competition, team, or topic..."
-              className="flex-1 px-6 py-4 rounded-xl bg-medium-gray text-white border-2 border-brand-strong focus:outline-none focus:border-[var(--bright-cyan)] transition-colors text-base"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search decks..."
+              className="w-full pl-11 pr-4 py-3 md:py-4 rounded-xl bg-medium-gray text-white border-2 border-brand-strong focus:outline-none focus:border-[var(--bright-cyan)] transition-colors text-base"
               data-testid="input-search"
             />
-            <button
-              onClick={() => setSearch(searchInput)}
-              className="px-8 py-4 rounded-xl text-white font-semibold gradient-primary transition-all hover:-translate-y-0.5 w-full sm:w-auto"
-              data-testid="button-search"
-            >
-              Search
-            </button>
           </div>
         </div>
       </section>
 
-      <section className="py-16 flex-1 bg-navy">
+      <section className="py-10 md:py-16 flex-1 bg-navy">
         <div className="container-acm">
+          {/* Mobile: filter toggle + sort row */}
+          <div className="lg:hidden flex items-center justify-between mb-6 gap-3">
+            <button
+              onClick={() => setFiltersOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-medium-gray text-white border border-brand-strong text-sm font-medium"
+              data-testid="button-open-filters"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 4H14M4 8H12M6 12H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              Filters
+              {activeFilterCount > 0 && (
+                <span
+                  className="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold text-white"
+                  style={{ background: "var(--bright-cyan)" }}
+                >
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortOpt)}
+              className="px-3 py-2.5 rounded-lg bg-medium-gray text-white border border-brand-strong text-sm cursor-pointer focus:outline-none focus:border-[var(--bright-cyan)]"
+              data-testid="select-sort-mobile"
+            >
+              <option value="recent">Most Recent</option>
+              <option value="name">Competition</option>
+              <option value="team">Team</option>
+            </select>
+          </div>
+
           <div className="grid gap-10 lg:grid-cols-[280px_1fr]">
-            {/* Sidebar */}
+            {/* Sidebar — desktop only */}
             <aside
-              className="bg-medium-gray rounded-2xl p-6 border border-brand h-fit lg:sticky lg:top-24"
+              className="hidden lg:block bg-medium-gray rounded-2xl p-6 border border-brand h-fit lg:sticky lg:top-24"
               data-testid="aside-filters"
             >
-              <FilterGroup title="Categories">
-                <FilterCheckbox
-                  label="All Decks"
-                  checked={categoryAll}
-                  onChange={handleCategoryAll}
-                  testId="filter-cat-all"
-                />
-                <FilterCheckbox
-                  label="College Competitions"
-                  checked={categories.has("college")}
-                  onChange={(c) => handleCategory("college", c)}
-                  testId="filter-cat-college"
-                />
-                <FilterCheckbox
-                  label="Corporate Competitions"
-                  checked={categories.has("corporate")}
-                  onChange={(c) => handleCategory("corporate", c)}
-                  testId="filter-cat-corporate"
-                />
-              </FilterGroup>
-
-              <FilterGroup title="Topics">
-                {TOPICS.map((t) => (
-                  <FilterCheckbox
-                    key={t}
-                    label={t.charAt(0).toUpperCase() + t.slice(1)}
-                    checked={topics.has(t)}
-                    onChange={(c) => handleTopic(t, c)}
-                    testId={`filter-topic-${t}`}
-                  />
-                ))}
-              </FilterGroup>
-
-              <FilterGroup title="Year">
-                {YEARS.map((y) => (
-                  <FilterCheckbox
-                    key={y}
-                    label={y}
-                    checked={years.has(y)}
-                    onChange={(c) => handleYear(y, c)}
-                    testId={`filter-year-${y}`}
-                  />
-                ))}
-              </FilterGroup>
-
-              <button
-                onClick={clearFilters}
-                className="w-full py-3 rounded-lg font-semibold text-sm border-2 transition-colors text-[var(--electric-blue)] hover:text-[var(--bright-cyan)] hover:border-[var(--bright-cyan)] hover:bg-[rgba(59,130,246,0.1)]"
-                style={{ borderColor: "var(--electric-blue)" }}
-                data-testid="button-clear-filters"
-              >
-                Clear All Filters
-              </button>
+              {filterPanel}
             </aside>
 
             {/* Decks */}
             <div>
-              <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+              <div className="hidden lg:flex items-center justify-between mb-8 flex-wrap gap-4">
                 <p className="text-secondary-muted text-sm">
                   <span className="text-cyan font-semibold" data-testid="text-deck-count">
                     {filtered.length}
@@ -241,6 +280,13 @@ export default function Library() {
                 </select>
               </div>
 
+              <p className="lg:hidden text-secondary-muted text-sm mb-6">
+                <span className="text-cyan font-semibold" data-testid="text-deck-count-mobile">
+                  {filtered.length}
+                </span>{" "}
+                deck{filtered.length === 1 ? "" : "s"} found
+              </p>
+
               {filtered.length === 0 ? (
                 <div className="text-center py-20">
                   <h3 className="text-xl text-secondary-muted mb-3">
@@ -255,7 +301,7 @@ export default function Library() {
                   className="grid gap-8"
                   style={{
                     gridTemplateColumns:
-                      "repeat(auto-fill, minmax(300px, 1fr))",
+                      "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
                   }}
                   data-testid="grid-decks"
                 >
@@ -268,6 +314,54 @@ export default function Library() {
           </div>
         </div>
       </section>
+
+      {/* Mobile filter drawer */}
+      {filtersOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-[60] flex"
+          data-testid="drawer-filters"
+        >
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setFiltersOpen(false)}
+          />
+          <div
+            className="relative ml-auto h-full w-[85%] max-w-sm bg-medium-gray border-l border-brand overflow-y-auto p-6 animate-slide-in-right"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2
+                className="text-xl font-bold text-white"
+                style={{ fontFamily: "var(--app-font-heading)" }}
+              >
+                Filters
+              </h2>
+              <button
+                onClick={() => setFiltersOpen(false)}
+                className="p-2 rounded-lg text-white hover:bg-navy"
+                data-testid="button-close-filters"
+                aria-label="Close filters"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path
+                    d="M5 5L15 15M15 5L5 15"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
+            {filterPanel}
+            <button
+              onClick={() => setFiltersOpen(false)}
+              className="w-full mt-4 py-3 rounded-lg font-semibold text-white gradient-primary"
+              data-testid="button-apply-filters"
+            >
+              Show {filtered.length} deck{filtered.length === 1 ? "" : "s"}
+            </button>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
