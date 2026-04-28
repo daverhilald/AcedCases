@@ -23,7 +23,6 @@ export default function Viewer() {
     drawPage(canvasRef.current, deck, pageNum, scale);
   }, [deck, pageNum, scale]);
 
-  // Keyboard shortcuts + block save/print
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === "s" || e.key === "S")) {
@@ -32,7 +31,7 @@ export default function Viewer() {
       }
       if ((e.ctrlKey || e.metaKey) && (e.key === "p" || e.key === "P")) {
         e.preventDefault();
-        alert("Printing is disabled for copyright protection.");
+        alert("Printing is disabled to respect the team's intellectual property.");
         return;
       }
       if (e.key === "ArrowLeft") setPageNum((p) => Math.max(1, p - 1));
@@ -46,23 +45,27 @@ export default function Viewer() {
 
   if (!deck) {
     return (
-      <div className="min-h-screen flex flex-col bg-navy">
+      <div className="min-h-screen flex flex-col surface-dark">
         <Navbar />
         <div className="flex-1 flex items-center justify-center py-32">
           <div className="text-center">
+            <p className="eyebrow-muted mb-4">404</p>
             <h1
-              className="text-3xl font-bold text-white mb-4"
-              style={{ fontFamily: "var(--app-font-heading)" }}
+              className="display-2 mb-6"
               data-testid="text-not-found"
             >
-              Deck not found
+              That deck isn't here.
             </h1>
             <Link
               href="/library"
-              className="inline-block mt-4 px-8 py-3 rounded-lg gradient-primary text-white font-semibold"
+              className="link-edit text-[15px]"
+              style={{
+                fontFamily: "var(--app-font-sans)",
+                color: "var(--on-bg)",
+              }}
               data-testid="link-back-to-library"
             >
-              ← Back to Library
+              Back to the library →
             </Link>
           </div>
         </div>
@@ -72,92 +75,100 @@ export default function Viewer() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-navy">
+    <div className="min-h-screen flex flex-col surface-dark">
       <Navbar />
 
       <div
         className="grid flex-1"
-        style={{ gridTemplateColumns: "minmax(0, 1fr) minmax(0, 400px)" }}
+        style={{ gridTemplateColumns: "minmax(0, 1fr) minmax(0, 380px)" }}
         data-testid="container-viewer"
       >
-        {/* PDF viewer */}
+        {/* PDF area */}
         <div
-          className="flex flex-col border-r border-brand viewer-pdf-section"
-          style={{ background: "var(--dark-gray)" }}
+          className="flex flex-col viewer-pdf-section"
+          style={{
+            background: "var(--bg-2)",
+            borderRight: "1px solid var(--rule)",
+          }}
         >
           <div
-            className="sticky top-[72px] z-40 flex items-center justify-between gap-4 px-6 py-5 border-b border-brand bg-medium-gray flex-wrap"
+            className="sticky top-[73px] z-40 flex items-center justify-between gap-4 px-7 py-4 flex-wrap"
+            style={{
+              background: "var(--bg-2)",
+              borderBottom: "1px solid var(--rule)",
+            }}
             data-testid="viewer-controls"
           >
-            <div className="flex items-center gap-3">
-              <button
+            <div className="flex items-center gap-5">
+              <ViewerButton
                 onClick={() => setPageNum((p) => Math.max(1, p - 1))}
                 disabled={pageNum <= 1}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-navy text-white border border-brand-strong text-sm font-medium transition-colors hover:border-[var(--bright-cyan)] disabled:opacity-50 disabled:cursor-not-allowed"
-                data-testid="button-prev"
+                testId="button-prev"
               >
-                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                  <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                Previous
-              </button>
-              <span className="text-sm text-secondary-muted font-medium">
-                Page <span className="text-white font-semibold" data-testid="text-current-page">{pageNum}</span> of{" "}
-                <span className="text-white font-semibold" data-testid="text-total-pages">{TOTAL_PAGES}</span>
+                ← Prev
+              </ViewerButton>
+              <span
+                className="text-[13px]"
+                style={{
+                  fontFamily: "var(--app-font-sans)",
+                  color: "var(--on-bg-muted)",
+                }}
+              >
+                <span style={{ color: "var(--on-bg)" }} data-testid="text-current-page">
+                  {String(pageNum).padStart(2, "0")}
+                </span>
+                <span> / </span>
+                <span data-testid="text-total-pages">{TOTAL_PAGES}</span>
               </span>
-              <button
+              <ViewerButton
                 onClick={() => setPageNum((p) => Math.min(TOTAL_PAGES, p + 1))}
                 disabled={pageNum >= TOTAL_PAGES}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-navy text-white border border-brand-strong text-sm font-medium transition-colors hover:border-[var(--bright-cyan)] disabled:opacity-50 disabled:cursor-not-allowed"
-                data-testid="button-next"
+                testId="button-next"
               >
-                Next
-                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                  <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
+                Next →
+              </ViewerButton>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
+            <div className="flex items-center gap-4">
+              <ViewerButton
                 onClick={() => setScale((s) => Math.max(MIN_SCALE, +(s - STEP).toFixed(2)))}
                 disabled={scale <= MIN_SCALE}
-                className="p-2.5 rounded-lg bg-navy text-white border border-brand-strong transition-colors hover:border-[var(--bright-cyan)] disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Zoom Out"
-                data-testid="button-zoom-out"
+                testId="button-zoom-out"
               >
-                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                  <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="2" />
-                  <path d="M6 9H12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  <path d="M13.5 13.5L17 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </button>
-              <span className="text-cyan font-semibold text-sm w-14 text-center" data-testid="text-zoom-level">
+                −
+              </ViewerButton>
+              <span
+                className="text-[13px] tabular-nums"
+                style={{
+                  fontFamily: "var(--app-font-sans)",
+                  color: "var(--on-bg-muted)",
+                  width: 42,
+                  textAlign: "center",
+                }}
+                data-testid="text-zoom-level"
+              >
                 {Math.round(scale * 100)}%
               </span>
-              <button
+              <ViewerButton
                 onClick={() => setScale((s) => Math.min(MAX_SCALE, +(s + STEP).toFixed(2)))}
                 disabled={scale >= MAX_SCALE}
-                className="p-2.5 rounded-lg bg-navy text-white border border-brand-strong transition-colors hover:border-[var(--bright-cyan)] disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Zoom In"
-                data-testid="button-zoom-in"
+                testId="button-zoom-in"
               >
-                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                  <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="2" />
-                  <path d="M6 9H12M9 6V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  <path d="M13.5 13.5L17 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </button>
+                +
+              </ViewerButton>
             </div>
           </div>
 
-          <div className="flex-1 flex items-center justify-center p-10 overflow-auto">
+          <div className="flex-1 flex items-center justify-center p-8 md:p-12 overflow-auto">
             <canvas
               ref={canvasRef}
               onContextMenu={(e) => e.preventDefault()}
               onDragStart={(e) => e.preventDefault()}
-              className="max-w-full h-auto rounded-lg select-none"
-              style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.5)" }}
+              className="max-w-full h-auto select-none"
+              style={{
+                background: "#ffffff",
+                boxShadow: "0 1px 0 rgba(0,0,0,0.4), 0 20px 60px rgba(0,0,0,0.45)",
+              }}
               data-testid="canvas-pdf"
             />
           </div>
@@ -165,93 +176,126 @@ export default function Viewer() {
 
         {/* Info sidebar */}
         <aside
-          className="bg-medium-gray p-8 overflow-y-auto deck-info-section"
+          className="overflow-y-auto deck-info-section"
+          style={{ background: "var(--bg)" }}
           data-testid="aside-deck-info"
         >
-          <div className="bg-navy rounded-2xl p-8 border border-brand">
-            <div className="pb-6 mb-8 border-b border-brand">
-              <h1
-                className="text-2xl md:text-3xl font-bold text-white leading-tight mb-4"
-                style={{ fontFamily: "var(--app-font-heading)" }}
-                data-testid="text-deck-title"
-              >
-                {deck.title}
-              </h1>
-              <div className="flex flex-wrap gap-2">
-                <Badge text={deck.thumbnail} testId="badge-category" />
-                <Badge text={deck.year} testId="badge-year" />
-              </div>
-            </div>
+          <div className="p-8 md:p-10">
+            <p className="eyebrow mb-5">Deck</p>
+            <h1
+              className="mb-6"
+              style={{
+                fontFamily: "var(--app-font-heading)",
+                fontWeight: 500,
+                fontSize: "clamp(24px, 2.4vw, 32px)",
+                lineHeight: 1.2,
+                letterSpacing: "-0.01em",
+                color: "var(--on-bg)",
+              }}
+              data-testid="text-deck-title"
+            >
+              {deck.title}
+            </h1>
+            <p
+              className="mb-10"
+              style={{
+                fontFamily: "var(--app-font-sans)",
+                fontSize: 13,
+                color: "var(--on-bg-muted)",
+              }}
+            >
+              {deck.year} · {deck.category === "college" ? "College" : "Corporate"} · {deck.topics.join(" / ")}
+            </p>
 
             <Section title="Competition">
-              <p className="text-secondary-muted text-[15px] leading-relaxed" data-testid="text-competition">
+              <p
+                style={{
+                  fontFamily: "var(--app-font-serif)",
+                  fontSize: 16,
+                  color: "var(--on-bg)",
+                  lineHeight: 1.55,
+                }}
+                data-testid="text-competition"
+              >
                 {deck.competition}
               </p>
             </Section>
 
-            <Section title="Team Credits">
-              <div className="mb-4">
-                <p className="text-cyan text-lg font-semibold mb-1" data-testid="text-team-name">
-                  {deck.team}
-                </p>
-                <p className="text-secondary-muted text-sm" data-testid="text-team-college">
-                  {deck.college}
-                </p>
-              </div>
-              <div className="flex flex-col gap-3" data-testid="list-team-members">
+            <Section title="Team">
+              <p
+                className="mb-1"
+                style={{
+                  fontFamily: "var(--app-font-heading)",
+                  fontStyle: "italic",
+                  fontSize: 18,
+                  color: "var(--on-bg)",
+                  letterSpacing: "-0.01em",
+                }}
+                data-testid="text-team-name"
+              >
+                {deck.team}
+              </p>
+              <p
+                className="mb-5"
+                style={{
+                  fontFamily: "var(--app-font-sans)",
+                  fontSize: 13,
+                  color: "var(--on-bg-muted)",
+                }}
+                data-testid="text-team-college"
+              >
+                {deck.college}
+              </p>
+              <ul className="flex flex-col gap-2.5" data-testid="list-team-members">
                 {deck.members.map((m, i) => (
-                  <a
-                    key={i}
-                    href={m.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 rounded-lg bg-medium-gray border border-brand transition-all hover:translate-x-1 hover:border-[var(--bright-cyan)]"
-                    data-testid={`link-member-${i}`}
-                  >
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-xs gradient-primary"
+                  <li key={i}>
+                    <a
+                      href={m.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="link-edit text-[14px]"
+                      style={{
+                        fontFamily: "var(--app-font-sans)",
+                        color: "var(--on-bg)",
+                      }}
+                      data-testid={`link-member-${i}`}
                     >
-                      {m.name
-                        .split(" ")
-                        .map((p) => p[0])
-                        .join("")
-                        .slice(0, 2)
-                        .toUpperCase()}
-                    </div>
-                    <span className="text-white text-sm font-medium flex-1">
-                      {m.name}
-                    </span>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="currentColor"
-                      style={{ color: "var(--bright-cyan)", opacity: 0.7 }}
-                    >
-                      <path d="M14 0H2C0.9 0 0 0.9 0 2V14C0 15.1 0.9 16 2 16H14C15.1 16 16 15.1 16 14V2C16 0.9 15.1 0 14 0ZM5 13H3V6H5V13ZM4 5C3.4 5 3 4.6 3 4C3 3.4 3.4 3 4 3C4.6 3 5 3.4 5 4C5 4.6 4.6 5 4 5ZM13 13H11V9.5C11 8.7 10.3 8 9.5 8C8.7 8 8 8.7 8 9.5V13H6V6H8V7C8.5 6.4 9.2 6 10 6C11.7 6 13 7.3 13 9V13Z" />
-                    </svg>
-                  </a>
+                      {m.name} ↗
+                    </a>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </Section>
 
-            <Section title="About This Deck">
+            <Section title="About this deck">
               <p
-                className="text-secondary-muted text-sm leading-relaxed"
+                style={{
+                  fontFamily: "var(--app-font-serif)",
+                  fontSize: 15,
+                  color: "var(--on-bg)",
+                  lineHeight: 1.65,
+                }}
                 data-testid="text-deck-description"
               >
                 {deck.description}
               </p>
             </Section>
 
-            <div className="pt-6 border-t border-brand">
+            <div
+              className="pt-7"
+              style={{ borderTop: "1px solid var(--rule)" }}
+            >
               <Link
                 href="/library"
-                className="block w-full text-center px-6 py-3 rounded-lg font-semibold text-white border-2 transition-colors hover:bg-[rgba(59,130,246,0.1)] hover:border-[var(--bright-cyan)]"
-                style={{ borderColor: "var(--electric-blue)" }}
+                className="link-edit text-[14px]"
+                style={{
+                  fontFamily: "var(--app-font-sans)",
+                  fontWeight: 500,
+                  color: "var(--on-bg)",
+                }}
                 data-testid="button-back-to-library"
               >
-                ← Back to Library
+                ← Back to the library
               </Link>
             </div>
           </div>
@@ -264,13 +308,41 @@ export default function Viewer() {
             grid-template-columns: 1fr !important;
           }
           .deck-info-section {
-            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            border-top: 1px solid var(--rule);
           }
         }
       `}</style>
 
       <Footer />
     </div>
+  );
+}
+
+function ViewerButton({
+  children,
+  onClick,
+  disabled,
+  testId,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  testId: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="text-[13px] transition-opacity hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed"
+      style={{
+        fontFamily: "var(--app-font-sans)",
+        fontWeight: 500,
+        color: "var(--on-bg)",
+      }}
+      data-testid={testId}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -282,50 +354,41 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mb-7">
-      <h3
-        className="text-sm font-bold text-white uppercase tracking-widest mb-3"
-        style={{ fontFamily: "var(--app-font-heading)" }}
-      >
-        {title}
-      </h3>
+    <div
+      className="py-7"
+      style={{ borderTop: "1px solid var(--rule)" }}
+    >
+      <p className="eyebrow-muted mb-4">{title}</p>
       {children}
     </div>
   );
 }
 
-function Badge({ text, testId }: { text: string; testId: string }) {
-  return (
-    <span
-      className="px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider text-cyan"
-      style={{ background: "rgba(6, 182, 212, 0.2)" }}
-      data-testid={testId}
-    >
-      {text}
-    </span>
-  );
-}
-
-/* ---------- Demo PDF page renderer ---------- */
+/* ---------- Editorial PDF page renderer (white paper, navy ink) ---------- */
 type Deck = ReturnType<typeof getDeckById> extends infer T ? Exclude<T, undefined> : never;
 
-const SLIDE_TEMPLATES = [
-  { title: "Cover", lines: [], cover: true },
-  { title: "Executive Summary", lines: ["Market opportunity", "Strategic recommendation", "Expected impact"] },
-  { title: "Problem Statement", lines: ["Current challenges", "Market gap", "Why now"] },
-  { title: "Market Analysis", lines: ["Total addressable market", "Customer segmentation", "Growth drivers"] },
-  { title: "Competitive Landscape", lines: ["Key players", "Positioning map", "Differentiators"] },
-  { title: "Customer Insights", lines: ["Persona 1", "Persona 2", "Persona 3"] },
-  { title: "Strategic Framework", lines: ["Three pillars", "Phased approach", "Capability requirements"] },
-  { title: "Recommended Approach", lines: ["Phase 1: Foundation", "Phase 2: Scale", "Phase 3: Expand"] },
-  { title: "Go-to-Market", lines: ["Channel mix", "Pricing model", "Launch sequence"] },
-  { title: "Operating Model", lines: ["Org design", "Tech stack", "Partnerships"] },
-  { title: "Financial Projections", lines: ["Year 1 outlook", "Year 3 trajectory", "Break-even"] },
-  { title: "Risk Assessment", lines: ["Market risks", "Operational risks", "Mitigations"] },
-  { title: "Implementation Roadmap", lines: ["Q1–Q2 milestones", "Q3–Q4 milestones", "Year 2 outlook"] },
-  { title: "Expected Impact", lines: ["Revenue lift", "Cost savings", "Strategic positioning"] },
-  { title: "Thank You", lines: ["Questions?", "", ""], cover: true },
+const SLIDE_TEMPLATES: Array<{ kind: "cover" | "content" | "thanks"; title: string; lines: string[] }> = [
+  { kind: "cover", title: "Cover", lines: [] },
+  { kind: "content", title: "Executive Summary", lines: ["Market opportunity", "Strategic recommendation", "Expected impact"] },
+  { kind: "content", title: "Problem Statement", lines: ["Current challenges", "Market gap", "Why now"] },
+  { kind: "content", title: "Market Analysis", lines: ["Total addressable market", "Customer segmentation", "Growth drivers"] },
+  { kind: "content", title: "Competitive Landscape", lines: ["Key players", "Positioning map", "Differentiators"] },
+  { kind: "content", title: "Customer Insights", lines: ["Persona one", "Persona two", "Persona three"] },
+  { kind: "content", title: "Strategic Framework", lines: ["Three pillars", "Phased approach", "Capability requirements"] },
+  { kind: "content", title: "Recommended Approach", lines: ["Phase one — Foundation", "Phase two — Scale", "Phase three — Expand"] },
+  { kind: "content", title: "Go to Market", lines: ["Channel mix", "Pricing model", "Launch sequence"] },
+  { kind: "content", title: "Operating Model", lines: ["Org design", "Tech stack", "Partnerships"] },
+  { kind: "content", title: "Financial Projections", lines: ["Year one outlook", "Year three trajectory", "Break-even"] },
+  { kind: "content", title: "Risk Assessment", lines: ["Market risks", "Operational risks", "Mitigations"] },
+  { kind: "content", title: "Implementation Roadmap", lines: ["Q1–Q2 milestones", "Q3–Q4 milestones", "Year two outlook"] },
+  { kind: "content", title: "Expected Impact", lines: ["Revenue lift", "Cost savings", "Strategic positioning"] },
+  { kind: "thanks", title: "Thank You", lines: [] },
 ];
+
+const NAVY = "#0A1128";
+const ACCENT = "#06B6D4";
+const PAPER = "#FFFFFF";
+const MUTED = "#6B7280";
 
 function drawPage(
   canvas: HTMLCanvasElement | null,
@@ -346,99 +409,126 @@ function drawPage(
 
   ctx.scale(scale, scale);
 
-  // Background
-  ctx.fillStyle = "#FFFFFF";
+  // White page
+  ctx.fillStyle = PAPER;
   ctx.fillRect(0, 0, baseW, baseH);
 
   const tpl = SLIDE_TEMPLATES[(pageNum - 1) % SLIDE_TEMPLATES.length];
 
-  if (tpl.cover) {
-    // Gradient cover
-    const grad = ctx.createLinearGradient(0, 0, baseW, baseH);
-    grad.addColorStop(0, "#0A1128");
-    grad.addColorStop(1, "#3B82F6");
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, baseW, baseH);
-
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 44px Poppins, sans-serif";
-    wrapText(ctx, deck.title, baseW / 2, 220, baseW - 120, 56);
-
-    ctx.font = "20px Inter, sans-serif";
-    ctx.fillStyle = "rgba(255,255,255,0.85)";
-    ctx.fillText(`${deck.team} • ${deck.college}`, baseW / 2, 360);
-
-    ctx.font = "16px Inter, sans-serif";
-    ctx.fillStyle = "#06B6D4";
-    ctx.fillText(deck.competition, baseW / 2, 395);
-
-    if (tpl.title === "Thank You") {
-      ctx.font = "bold 60px Poppins, sans-serif";
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillText("Thank You", baseW / 2, 280);
-      ctx.font = "22px Inter, sans-serif";
-      ctx.fillStyle = "rgba(255,255,255,0.85)";
-      ctx.fillText("Questions?", baseW / 2, 340);
-    }
-  } else {
-    // Header bar
-    ctx.fillStyle = "#0A1128";
-    ctx.fillRect(0, 0, baseW, 60);
-    ctx.fillStyle = "#06B6D4";
-    ctx.fillRect(0, 60, baseW, 4);
-
+  if (tpl.kind === "cover") {
+    // Top eyebrow
     ctx.textAlign = "left";
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 18px Poppins, sans-serif";
-    ctx.fillText(deck.team, 40, 38);
+    ctx.fillStyle = ACCENT;
+    ctx.font = "500 11px Inter, sans-serif";
+    ctx.fillText(`${deck.competition.toUpperCase()}`, 64, 72);
 
+    // Hairline
+    ctx.strokeStyle = NAVY;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(64, 90);
+    ctx.lineTo(180, 90);
+    ctx.stroke();
+
+    // Big serif title
+    ctx.fillStyle = NAVY;
+    ctx.font = "500 44px Fraunces, Georgia, serif";
+    wrapText(ctx, deck.title, 64, 200, baseW - 128, 56);
+
+    // Team
+    ctx.fillStyle = NAVY;
+    ctx.font = "italic 500 22px Fraunces, Georgia, serif";
+    ctx.fillText(deck.team, 64, baseH - 120);
+
+    // Members byline
+    ctx.fillStyle = MUTED;
+    ctx.font = "400 14px Inter, sans-serif";
+    const byline = deck.members.map((m) => m.name).join(" · ");
+    ctx.fillText(byline, 64, baseH - 92);
+
+    // Footer hairline + brand
+    ctx.strokeStyle = "rgba(10,17,40,0.15)";
+    ctx.beginPath();
+    ctx.moveTo(64, baseH - 60);
+    ctx.lineTo(baseW - 64, baseH - 60);
+    ctx.stroke();
+
+    ctx.fillStyle = MUTED;
+    ctx.font = "400 11px Inter, sans-serif";
+    ctx.fillText(deck.college.toUpperCase(), 64, baseH - 38);
     ctx.textAlign = "right";
-    ctx.font = "14px Inter, sans-serif";
-    ctx.fillStyle = "rgba(255,255,255,0.7)";
-    ctx.fillText(`Page ${pageNum} / ${TOTAL_PAGES}`, baseW - 40, 38);
+    ctx.fillText(`${deck.year}`, baseW - 64, baseH - 38);
+  } else if (tpl.kind === "thanks") {
+    ctx.textAlign = "center";
+    ctx.fillStyle = NAVY;
+    ctx.font = "italic 500 64px Fraunces, Georgia, serif";
+    ctx.fillText("Thank you.", baseW / 2, baseH / 2 - 10);
+
+    ctx.fillStyle = MUTED;
+    ctx.font = "400 14px Inter, sans-serif";
+    ctx.fillText("Questions welcome", baseW / 2, baseH / 2 + 30);
+
+    // Footer
+    ctx.textAlign = "left";
+    ctx.strokeStyle = "rgba(10,17,40,0.15)";
+    ctx.beginPath();
+    ctx.moveTo(64, baseH - 60);
+    ctx.lineTo(baseW - 64, baseH - 60);
+    ctx.stroke();
+    ctx.fillStyle = MUTED;
+    ctx.font = "400 11px Inter, sans-serif";
+    ctx.fillText(deck.team.toUpperCase(), 64, baseH - 38);
+    ctx.textAlign = "right";
+    ctx.fillText(`${String(pageNum).padStart(2, "0")} / ${TOTAL_PAGES}`, baseW - 64, baseH - 38);
+  } else {
+    // Eyebrow
+    ctx.textAlign = "left";
+    ctx.fillStyle = ACCENT;
+    ctx.font = "500 11px Inter, sans-serif";
+    ctx.fillText("SECTION", 64, 72);
+
+    // Hairline
+    ctx.strokeStyle = NAVY;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(64, 90);
+    ctx.lineTo(120, 90);
+    ctx.stroke();
 
     // Title
-    ctx.textAlign = "left";
-    ctx.fillStyle = "#0A1128";
-    ctx.font = "bold 36px Poppins, sans-serif";
-    ctx.fillText(tpl.title, 60, 140);
+    ctx.fillStyle = NAVY;
+    ctx.font = "500 36px Fraunces, Georgia, serif";
+    ctx.fillText(tpl.title, 64, 150);
 
-    // Underline
-    ctx.fillStyle = "#3B82F6";
-    ctx.fillRect(60, 158, 80, 4);
-
-    // Bullets
-    ctx.font = "20px Inter, sans-serif";
-    ctx.fillStyle = "#374151";
-    let y = 230;
+    // Body bullets — numbered, editorial
+    let y = 240;
     tpl.lines.forEach((line, i) => {
-      if (!line) return;
-      ctx.fillStyle = "#06B6D4";
-      ctx.beginPath();
-      ctx.arc(80, y - 6, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#374151";
+      const num = String(i + 1).padStart(2, "0");
+
+      ctx.fillStyle = ACCENT;
+      ctx.font = "italic 500 14px Fraunces, Georgia, serif";
+      ctx.fillText(num, 64, y);
+
+      ctx.fillStyle = NAVY;
+      ctx.font = "500 22px Fraunces, Georgia, serif";
       ctx.fillText(line, 100, y);
-      y += 50;
-      // Subtle separator
-      if (i < tpl.lines.length - 1) {
-        ctx.strokeStyle = "rgba(0,0,0,0.05)";
-        ctx.beginPath();
-        ctx.moveTo(80, y - 22);
-        ctx.lineTo(baseW - 80, y - 22);
-        ctx.stroke();
-      }
+
+      y += 56;
     });
 
-    // Footer brand
-    ctx.fillStyle = "#9CA3AF";
-    ctx.font = "12px Inter, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("AcedCases — Sample Deck Preview", baseW / 2, baseH - 24);
+    // Footer
+    ctx.strokeStyle = "rgba(10,17,40,0.15)";
+    ctx.beginPath();
+    ctx.moveTo(64, baseH - 60);
+    ctx.lineTo(baseW - 64, baseH - 60);
+    ctx.stroke();
+    ctx.fillStyle = MUTED;
+    ctx.font = "400 11px Inter, sans-serif";
+    ctx.fillText(deck.team.toUpperCase(), 64, baseH - 38);
+    ctx.textAlign = "right";
+    ctx.fillText(`${String(pageNum).padStart(2, "0")} / ${TOTAL_PAGES}`, baseW - 64, baseH - 38);
   }
 
-  // Reset transform so subsequent draws aren't compounded
   ctx.setTransform(1, 0, 0, 1, 0, 0);
 }
 

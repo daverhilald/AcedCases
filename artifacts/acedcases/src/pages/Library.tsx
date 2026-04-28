@@ -27,7 +27,6 @@ export default function Library() {
   const [years, setYears] = useState<Set<string>>(new Set());
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  // Apply URL params on mount
   useEffect(() => {
     const cat = params.get("category") as DeckCategory | null;
     const domain = (params.get("domain") ?? params.get("topic")) as DeckTopic | null;
@@ -107,21 +106,21 @@ export default function Library() {
 
   const filterPanel = (
     <>
-      <FilterGroup title="Categories">
-        <FilterCheckbox
-          label="All Decks"
+      <FilterGroup title="Category">
+        <FilterRadioLabel
+          label="All decks"
           checked={categoryAll}
           onChange={handleCategoryAll}
           testId="filter-cat-all"
         />
-        <FilterCheckbox
-          label="College Competitions"
+        <FilterRadioLabel
+          label="College"
           checked={categories.has("college")}
           onChange={(c) => handleCategory("college", c)}
           testId="filter-cat-college"
         />
-        <FilterCheckbox
-          label="Corporate Competitions"
+        <FilterRadioLabel
+          label="Corporate"
           checked={categories.has("corporate")}
           onChange={(c) => handleCategory("corporate", c)}
           testId="filter-cat-corporate"
@@ -130,7 +129,7 @@ export default function Library() {
 
       <FilterGroup title="Domain">
         {DOMAINS.map((t) => (
-          <FilterCheckbox
+          <FilterRadioLabel
             key={t}
             label={t.charAt(0).toUpperCase() + t.slice(1)}
             checked={domains.has(t)}
@@ -142,7 +141,7 @@ export default function Library() {
 
       <FilterGroup title="Year">
         {YEARS.map((y) => (
-          <FilterCheckbox
+          <FilterRadioLabel
             key={y}
             label={y}
             checked={years.has(y)}
@@ -154,122 +153,124 @@ export default function Library() {
 
       <button
         onClick={clearFilters}
-        className="w-full py-3 rounded-lg font-semibold text-sm border-2 transition-colors text-[var(--electric-blue)] hover:text-[var(--bright-cyan)] hover:border-[var(--bright-cyan)] hover:bg-[rgba(59,130,246,0.1)]"
-        style={{ borderColor: "var(--electric-blue)" }}
+        className="mt-4 text-[13px] link-edit"
+        style={{
+          fontFamily: "var(--app-font-sans)",
+          color: "var(--on-bg)",
+          alignSelf: "start",
+        }}
         data-testid="button-clear-filters"
       >
-        Clear All Filters
+        Clear filters
       </button>
     </>
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-navy">
+    <div className="min-h-screen flex flex-col surface-dark">
       <Navbar />
 
+      {/* Page header */}
       <section
-        className="bg-dark-gray border-b border-brand py-12 md:py-16"
+        className="py-16 md:py-24"
+        style={{ borderBottom: "1px solid var(--rule)" }}
         data-testid="section-library-header"
       >
         <div className="container-acm">
+          <p className="eyebrow mb-5">Library</p>
           <h1
-            className="text-4xl md:text-6xl font-extrabold mb-3 text-gradient"
-            style={{ fontFamily: "var(--app-font-heading)" }}
+            className="display-2 mb-6 max-w-3xl"
             data-testid="text-page-title"
           >
-            Deck Library
+            All the decks,{" "}
+            <span style={{ fontStyle: "italic" }}>in one place.</span>
           </h1>
-          <p className="text-base md:text-lg text-secondary-muted mb-6 md:mb-8">
-            Explore winning case competition strategies from top teams.
-          </p>
-          <div className="max-w-2xl mx-auto relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-muted pointer-events-none">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="2" />
-                <path d="M13.5 13.5L17 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </span>
+          <div
+            className="max-w-xl relative"
+            style={{ borderBottom: "1px solid var(--rule)" }}
+          >
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search decks..."
-              className="w-full pl-11 pr-4 py-3 md:py-4 rounded-xl bg-medium-gray text-white border-2 border-brand-strong focus:outline-none focus:border-[var(--bright-cyan)] transition-colors text-base"
+              placeholder="Search by team, college, competition…"
+              className="w-full bg-transparent py-3 pr-10 text-base focus:outline-none"
+              style={{
+                fontFamily: "var(--app-font-sans)",
+                color: "var(--on-bg)",
+              }}
               data-testid="input-search"
             />
+            <span
+              className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ color: "var(--on-bg-muted)" }}
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="8" cy="8" r="5.5" stroke="currentColor" />
+                <path d="M12 12L16 16" stroke="currentColor" strokeLinecap="round" />
+              </svg>
+            </span>
           </div>
         </div>
       </section>
 
-      <section className="py-10 md:py-16 flex-1 bg-navy">
+      <section className="py-12 md:py-20 flex-1">
         <div className="container-acm">
-          {/* Mobile: filter toggle */}
-          <div className="lg:hidden mb-6">
+          {/* Mobile filter trigger */}
+          <div className="lg:hidden mb-8 flex items-center justify-between">
+            <span
+              className="eyebrow-muted"
+              data-testid="text-deck-count-mobile"
+            >
+              {filtered.length} {filtered.length === 1 ? "deck" : "decks"}
+            </span>
             <button
               onClick={() => setFiltersOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-medium-gray text-white border border-brand-strong text-sm font-medium"
+              className="link-edit text-[13px]"
+              style={{
+                fontFamily: "var(--app-font-sans)",
+                fontWeight: 500,
+                color: "var(--on-bg)",
+              }}
               data-testid="button-open-filters"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M2 4H14M4 8H12M6 12H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              Filters
-              {activeFilterCount > 0 && (
-                <span
-                  className="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold text-white"
-                  style={{ background: "var(--bright-cyan)" }}
-                >
-                  {activeFilterCount}
-                </span>
-              )}
+              Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
             </button>
           </div>
 
-          <div className="grid gap-10 lg:grid-cols-[280px_1fr]">
-            {/* Sidebar — desktop only */}
+          <div className="grid gap-12 lg:grid-cols-[200px_1fr]">
             <aside
-              className="hidden lg:block bg-medium-gray rounded-2xl p-6 border border-brand h-fit lg:sticky lg:top-24"
+              className="hidden lg:flex flex-col h-fit lg:sticky lg:top-24"
               data-testid="aside-filters"
             >
               {filterPanel}
             </aside>
 
-            {/* Decks */}
             <div>
-              <p className="hidden lg:block text-secondary-muted text-sm mb-8">
-                <span className="text-cyan font-semibold" data-testid="text-deck-count">
-                  {filtered.length}
-                </span>{" "}
-                deck{filtered.length === 1 ? "" : "s"} found
-              </p>
-
-              <p className="lg:hidden text-secondary-muted text-sm mb-6">
-                <span className="text-cyan font-semibold" data-testid="text-deck-count-mobile">
-                  {filtered.length}
-                </span>{" "}
-                deck{filtered.length === 1 ? "" : "s"} found
+              <p
+                className="hidden lg:block eyebrow-muted mb-8"
+                data-testid="text-deck-count"
+              >
+                {filtered.length} {filtered.length === 1 ? "deck" : "decks"}
               </p>
 
               {filtered.length === 0 ? (
-                <div className="text-center py-20">
-                  <h3 className="text-xl text-secondary-muted mb-3">
-                    No decks found
-                  </h3>
-                  <p className="text-secondary-muted text-sm">
-                    Try adjusting your filters or search query.
+                <div className="py-20">
+                  <p
+                    style={{
+                      fontFamily: "var(--app-font-serif)",
+                      fontStyle: "italic",
+                      fontSize: 20,
+                      color: "var(--on-bg-muted)",
+                    }}
+                  >
+                    Nothing matches that yet.
                   </p>
                 </div>
               ) : (
-                <div
-                  className="grid gap-8"
-                  style={{
-                    gridTemplateColumns:
-                      "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
-                  }}
-                  data-testid="grid-decks"
-                >
-                  {filtered.map((d, i) => (
-                    <DeckCard key={d.id} deck={d} index={i} />
+                <div data-testid="grid-decks">
+                  {filtered.map((d) => (
+                    <DeckCard key={d.id} deck={d} variant="dark" />
                   ))}
                 </div>
               )}
@@ -278,37 +279,36 @@ export default function Library() {
         </div>
       </section>
 
-      {/* Mobile filter drawer */}
       {filtersOpen && (
         <div
           className="lg:hidden fixed inset-0 z-[60] flex"
           data-testid="drawer-filters"
         >
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0"
+            style={{ background: "rgba(0,0,0,0.6)" }}
             onClick={() => setFiltersOpen(false)}
           />
           <div
-            className="relative ml-auto h-full w-[85%] max-w-sm bg-medium-gray border-l border-brand overflow-y-auto p-6 animate-slide-in-right"
+            className="relative ml-auto h-full w-[85%] max-w-sm overflow-y-auto p-7 animate-slide-in-right flex flex-col"
+            style={{
+              background: "var(--bg-2)",
+              borderLeft: "1px solid var(--rule)",
+            }}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2
-                className="text-xl font-bold text-white"
-                style={{ fontFamily: "var(--app-font-heading)" }}
-              >
-                Filters
-              </h2>
+            <div className="flex items-center justify-between mb-8">
+              <p className="eyebrow-muted">Filter</p>
               <button
                 onClick={() => setFiltersOpen(false)}
-                className="p-2 rounded-lg text-white hover:bg-navy"
-                data-testid="button-close-filters"
+                className="text-on-bg"
                 aria-label="Close filters"
+                data-testid="button-close-filters"
               >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                   <path
                     d="M5 5L15 15M15 5L5 15"
                     stroke="currentColor"
-                    strokeWidth="2"
+                    strokeWidth="1.5"
                     strokeLinecap="round"
                   />
                 </svg>
@@ -317,10 +317,15 @@ export default function Library() {
             {filterPanel}
             <button
               onClick={() => setFiltersOpen(false)}
-              className="w-full mt-4 py-3 rounded-lg font-semibold text-white gradient-primary"
+              className="mt-auto text-[13px] py-3 self-start link-edit"
+              style={{
+                fontFamily: "var(--app-font-sans)",
+                fontWeight: 500,
+                color: "var(--on-bg)",
+              }}
               data-testid="button-apply-filters"
             >
-              Show {filtered.length} deck{filtered.length === 1 ? "" : "s"}
+              Show {filtered.length} {filtered.length === 1 ? "deck" : "decks"} →
             </button>
           </div>
         </div>
@@ -339,19 +344,14 @@ function FilterGroup({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mb-8">
-      <h3
-        className="text-lg font-bold text-white mb-4"
-        style={{ fontFamily: "var(--app-font-heading)" }}
-      >
-        {title}
-      </h3>
-      <div className="flex flex-col gap-3">{children}</div>
+    <div className="mb-9">
+      <p className="eyebrow-muted mb-4">{title}</p>
+      <div className="flex flex-col gap-2.5">{children}</div>
     </div>
   );
 }
 
-function FilterCheckbox({
+function FilterRadioLabel({
   label,
   checked,
   onChange,
@@ -364,16 +364,30 @@ function FilterCheckbox({
 }) {
   return (
     <label
-      className="flex items-center gap-3 cursor-pointer text-sm text-secondary-muted hover:text-white transition-colors"
+      className="flex items-center gap-3 cursor-pointer text-[14px] transition-colors group"
+      style={{
+        fontFamily: "var(--app-font-sans)",
+        color: checked ? "var(--on-bg)" : "var(--on-bg-muted)",
+      }}
       data-testid={testId}
     >
       <input
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="w-[18px] h-[18px] cursor-pointer accent-[var(--bright-cyan)]"
+        className="sr-only"
       />
-      <span>{label}</span>
+      <span
+        aria-hidden
+        className="inline-block transition-all"
+        style={{
+          width: 14,
+          height: 1,
+          background: checked ? "var(--accent)" : "var(--on-bg-muted)",
+          opacity: checked ? 1 : 0.4,
+        }}
+      />
+      <span className="group-hover:opacity-80">{label}</span>
     </label>
   );
 }

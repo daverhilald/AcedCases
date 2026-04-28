@@ -1,62 +1,112 @@
 import { Link, useLocation } from "wouter";
-import { useEffect, useState } from "react";
 
-export function Navbar() {
+interface Props {
+  variant?: "dark" | "paper";
+}
+
+export function Navbar({ variant = "dark" }: Props) {
   const [location] = useLocation();
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   const onLibrary = location === "/library";
   const onAbout = location === "/about";
 
+  const isPaper = variant === "paper";
+  const textColor = isPaper ? "var(--ink)" : "var(--on-bg)";
+  const ruleColor = isPaper ? "var(--paper-rule)" : "var(--rule)";
+
   return (
     <nav
-      className="sticky top-0 z-50 border-b border-brand backdrop-blur"
+      className="sticky top-0 z-50"
       style={{
-        background: scrolled ? "rgba(10,17,40,0.98)" : "rgba(10,17,40,0.95)",
-        boxShadow: scrolled ? "0 4px 20px rgba(0,0,0,0.3)" : "none",
-        transition: "all 0.3s ease",
+        background: isPaper ? "var(--paper)" : "var(--bg)",
+        borderBottom: `1px solid ${ruleColor}`,
       }}
       data-testid="navbar"
     >
       <div className="container-acm">
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between py-5">
           <Link
             href="/"
-            className="text-2xl font-extrabold text-gradient"
-            style={{ fontFamily: "var(--app-font-heading)" }}
+            className="flex items-baseline gap-1"
             data-testid="link-logo"
           >
-            AcedCases
+            <span
+              style={{
+                fontFamily: "var(--app-font-heading)",
+                fontWeight: 500,
+                fontSize: 22,
+                letterSpacing: "-0.02em",
+                color: textColor,
+              }}
+            >
+              Aced
+            </span>
+            <span
+              style={{
+                fontFamily: "var(--app-font-heading)",
+                fontWeight: 500,
+                fontSize: 22,
+                letterSpacing: "-0.02em",
+                fontStyle: "italic",
+                color: textColor,
+              }}
+            >
+              Cases
+            </span>
+            <span
+              aria-hidden
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: "var(--accent)",
+                marginLeft: 2,
+                alignSelf: "end",
+                marginBottom: 6,
+              }}
+            />
           </Link>
 
-          <div className="flex items-center gap-6 sm:gap-8">
+          <div className="flex items-center gap-7 sm:gap-9">
             {!onLibrary && (
-              <Link
-                href="/library"
-                className="text-[15px] font-medium text-white transition-colors hover:text-cyan"
-                data-testid="link-nav-library"
-              >
+              <NavLink href="/library" testId="link-nav-library" color={textColor}>
                 Library
-              </Link>
+              </NavLink>
             )}
             {!onAbout && (
-              <Link
-                href="/about"
-                className="text-[15px] font-medium text-white transition-colors hover:text-cyan"
-                data-testid="link-nav-about"
-              >
+              <NavLink href="/about" testId="link-nav-about" color={textColor}>
                 About
-              </Link>
+              </NavLink>
             )}
           </div>
         </div>
       </div>
     </nav>
+  );
+}
+
+function NavLink({
+  href,
+  children,
+  testId,
+  color,
+}: {
+  href: string;
+  children: React.ReactNode;
+  testId: string;
+  color: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="text-[14px] tracking-wide transition-opacity hover:opacity-70"
+      style={{
+        color,
+        fontFamily: "var(--app-font-sans)",
+        fontWeight: 500,
+      }}
+      data-testid={testId}
+    >
+      {children}
+    </Link>
   );
 }
