@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd artifacts/acedcases && pnpm run build",
-  "outputDirectory": "artifacts/acedcases/dist/public",
-  "installCommand": "pnpm install"
-}
