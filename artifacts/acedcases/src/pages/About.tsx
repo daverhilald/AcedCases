@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
@@ -138,18 +139,18 @@ export default function About() {
             ))}
           </div>
 
-          <a
-            href="mailto:daverhilald@gmail.com"
+          <Link
+            href="/submit"
             className="link-edit text-[15px]"
             style={{
               fontFamily: "var(--app-font-sans)",
               fontWeight: 500,
               color: "var(--on-bg)",
             }}
-            data-testid="link-submit-email"
+            data-testid="link-submit-page"
           >
-            submit@acedcases.in →
-          </a>
+            Submit a deck →
+          </Link>
         </div>
       </section>
 

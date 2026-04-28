@@ -7,6 +7,7 @@ import Home from "@/pages/Home";
 import Library from "@/pages/Library";
 import Viewer from "@/pages/Viewer";
 import About from "@/pages/About";
+import Submit from "@/pages/Submit";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/viewer/:id" component={Viewer} />
       <Route path="/viewer" component={Viewer} />
       <Route path="/about" component={About} />
+      <Route path="/submit" component={Submit} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -206,29 +206,32 @@ export default function Home() {
             }}
           >
             No subscription. No download button. No "premium tier." Built by
-            students, for students. If you won something and want to share,{" "}
-            <a
-              href="mailto:daverhilald@gmail.com"
-              className="link-edit"
-              style={{ color: "var(--ink)" }}
-              data-testid="link-submit-email"
-            >
-              email us your deck
-            </a>
-            .
+            students, for students. If you won something and want to share, we
+            have a small form that takes about a minute.
           </p>
-          <div className="mt-10">
+          <div className="mt-10 flex items-center gap-8 flex-wrap">
             <Link
-              href="/about"
-              className="link-edit text-[14px]"
+              href="/submit"
+              className="link-edit text-[15px]"
               style={{
                 fontFamily: "var(--app-font-sans)",
                 fontWeight: 500,
                 color: "var(--ink)",
               }}
+              data-testid="link-submit-cta"
+            >
+              Submit a deck →
+            </Link>
+            <Link
+              href="/about"
+              className="text-[14px] transition-opacity hover:opacity-70"
+              style={{
+                fontFamily: "var(--app-font-sans)",
+                color: "var(--paper-muted)",
+              }}
               data-testid="link-read-more-about"
             >
-              Read the full story →
+              Read the full story
             </Link>
           </div>
         </div>
