@@ -1,4 +1,3 @@
 {
-  "buildCommand": "echo 'No build required'",
   "outputDirectory": "artifacts/acedcases"
 }
