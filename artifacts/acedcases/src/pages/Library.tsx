@@ -8,8 +8,6 @@ import { decksData, type DeckCategory, type DeckTopic } from "@/data/decks";
 const DOMAINS: DeckTopic[] = ["strategy", "marketing", "finance", "operations", "analytics"];
 const YEARS = ["2024", "2023", "2022"];
 
-type SortOpt = "recent" | "name" | "team";
-
 function useQueryParams() {
   const [location] = useLocation();
   return useMemo(() => {
@@ -27,7 +25,6 @@ export default function Library() {
   const [categories, setCategories] = useState<Set<DeckCategory>>(new Set());
   const [domains, setDomains] = useState<Set<DeckTopic>>(new Set());
   const [years, setYears] = useState<Set<string>>(new Set());
-  const [sort, setSort] = useState<SortOpt>("recent");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Apply URL params on mount
@@ -85,7 +82,6 @@ export default function Library() {
     setCategories(new Set());
     setDomains(new Set());
     setYears(new Set());
-    setSort("recent");
   };
 
   const activeFilterCount =
@@ -93,7 +89,7 @@ export default function Library() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    let result = decksData.filter((deck) => {
+    return decksData.filter((deck) => {
       const categoryMatch = categoryAll || categories.has(deck.category);
       const domainMatch =
         domains.size === 0 || deck.topics.some((t) => domains.has(t));
@@ -107,18 +103,7 @@ export default function Library() {
         deck.tags.some((tag) => tag.toLowerCase().includes(q));
       return categoryMatch && domainMatch && yearMatch && searchMatch;
     });
-
-    if (sort === "recent") {
-      result = [...result].sort((a, b) => b.year.localeCompare(a.year));
-    } else if (sort === "name") {
-      result = [...result].sort((a, b) =>
-        a.competition.localeCompare(b.competition),
-      );
-    } else if (sort === "team") {
-      result = [...result].sort((a, b) => a.team.localeCompare(b.team));
-    }
-    return result;
-  }, [search, categoryAll, categories, domains, years, sort]);
+  }, [search, categoryAll, categories, domains, years]);
 
   const filterPanel = (
     <>
@@ -218,8 +203,8 @@ export default function Library() {
 
       <section className="py-10 md:py-16 flex-1 bg-navy">
         <div className="container-acm">
-          {/* Mobile: filter toggle + sort row */}
-          <div className="lg:hidden flex items-center justify-between mb-6 gap-3">
+          {/* Mobile: filter toggle */}
+          <div className="lg:hidden mb-6">
             <button
               onClick={() => setFiltersOpen(true)}
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-medium-gray text-white border border-brand-strong text-sm font-medium"
@@ -238,16 +223,6 @@ export default function Library() {
                 </span>
               )}
             </button>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortOpt)}
-              className="px-3 py-2.5 rounded-lg bg-medium-gray text-white border border-brand-strong text-sm cursor-pointer focus:outline-none focus:border-[var(--bright-cyan)]"
-              data-testid="select-sort-mobile"
-            >
-              <option value="recent">Most Recent</option>
-              <option value="name">Competition</option>
-              <option value="team">Team</option>
-            </select>
           </div>
 
           <div className="grid gap-10 lg:grid-cols-[280px_1fr]">
@@ -261,24 +236,12 @@ export default function Library() {
 
             {/* Decks */}
             <div>
-              <div className="hidden lg:flex items-center justify-between mb-8 flex-wrap gap-4">
-                <p className="text-secondary-muted text-sm">
-                  <span className="text-cyan font-semibold" data-testid="text-deck-count">
-                    {filtered.length}
-                  </span>{" "}
-                  deck{filtered.length === 1 ? "" : "s"} found
-                </p>
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value as SortOpt)}
-                  className="px-4 py-2.5 rounded-lg bg-medium-gray text-white border border-brand-strong text-sm cursor-pointer focus:outline-none focus:border-[var(--bright-cyan)]"
-                  data-testid="select-sort"
-                >
-                  <option value="recent">Most Recent</option>
-                  <option value="name">Competition Name</option>
-                  <option value="team">Team Name</option>
-                </select>
-              </div>
+              <p className="hidden lg:block text-secondary-muted text-sm mb-8">
+                <span className="text-cyan font-semibold" data-testid="text-deck-count">
+                  {filtered.length}
+                </span>{" "}
+                deck{filtered.length === 1 ? "" : "s"} found
+              </p>
 
               <p className="lg:hidden text-secondary-muted text-sm mb-6">
                 <span className="text-cyan font-semibold" data-testid="text-deck-count-mobile">
