@@ -38,7 +38,7 @@ export function DeckCard({ deck, variant = "dark" }: Props) {
             </span>
             <span style={{ color: muted, fontSize: 11 }}>·</span>
             <span className="eyebrow-muted" style={{ color: muted }}>
-              {deck.category === "college" ? "College" : "Corporate"}
+              {deck.category === "college" ? "College competitions" : "Corporate competitions"}
             </span>
             <span style={{ color: muted, fontSize: 11 }}>·</span>
             <span className="eyebrow-muted" style={{ color: muted }}>

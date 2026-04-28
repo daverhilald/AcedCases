@@ -114,13 +114,13 @@ export default function Library() {
           testId="filter-cat-all"
         />
         <FilterRadioLabel
-          label="College"
+          label="College competitions"
           checked={categories.has("college")}
           onChange={(c) => handleCategory("college", c)}
           testId="filter-cat-college"
         />
         <FilterRadioLabel
-          label="Corporate"
+          label="Corporate competitions"
           checked={categories.has("corporate")}
           onChange={(c) => handleCategory("corporate", c)}
           testId="filter-cat-corporate"

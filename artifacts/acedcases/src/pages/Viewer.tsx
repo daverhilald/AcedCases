@@ -204,7 +204,7 @@ export default function Viewer() {
                 color: "var(--on-bg-muted)",
               }}
             >
-              {deck.year} · {deck.category === "college" ? "College" : "Corporate"} · {deck.topics.join(" / ")}
+              {deck.year} · {deck.category === "college" ? "College competitions" : "Corporate competitions"} · {deck.topics.join(" / ")}
             </p>
 
             <Section title="Competition">

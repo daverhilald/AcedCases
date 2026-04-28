@@ -150,19 +150,6 @@ export function DeckThumbnail({ deck, width = 320, className }: Props) {
         {deck.college.toUpperCase()}
       </text>
 
-      {/* Page indicator (top right) */}
-      <text
-        x={W - 20}
-        y={28}
-        textAnchor="end"
-        fontFamily="Inter, sans-serif"
-        fontWeight={500}
-        fontSize={9}
-        fill={MUTED}
-        style={{ letterSpacing: "0.18em" }}
-      >
-        {deck.category === "college" ? "COLLEGE" : "CORPORATE"}
-      </text>
     </svg>
   );
 }

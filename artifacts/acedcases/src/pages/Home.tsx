@@ -90,7 +90,7 @@ export default function Home() {
               }}
             >
               {decksData.length} decks · {competitions} competitions ·{" "}
-              {collegeCount} college, {corporateCount} corporate
+              {collegeCount} college, {corporateCount} corporate competitions
             </p>
           </div>
 
