@@ -139,7 +139,7 @@ export default function About() {
           </div>
 
           <a
-            href="mailto:submit@acedcases.com"
+            href="mailto:daverhilald@gmail.com"
             className="link-edit text-[15px]"
             style={{
               fontFamily: "var(--app-font-sans)",
@@ -148,7 +148,7 @@ export default function About() {
             }}
             data-testid="link-submit-email"
           >
-            submit@acedcases.com →
+            submit@acedcases.in →
           </a>
         </div>
       </section>
@@ -167,7 +167,7 @@ export default function About() {
             Questions, corrections, or kind words?
           </p>
           <a
-            href="mailto:hello@acedcases.com"
+            href="mailto:daverhilald@gmail.com"
             className="link-edit text-[15px]"
             style={{
               fontFamily: "var(--app-font-sans)",
@@ -176,7 +176,7 @@ export default function About() {
             }}
             data-testid="link-contact-email"
           >
-            hello@acedcases.com →
+            hello@acedcases.in →
           </a>
         </div>
       </section>

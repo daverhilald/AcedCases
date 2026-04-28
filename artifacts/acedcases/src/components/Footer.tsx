@@ -23,12 +23,12 @@ export function Footer({ variant = "dark" }: Props) {
             · Open knowledge for case competition teams
           </span>
           <a
-            href="mailto:hello@acedcases.com"
+            href="mailto:daverhilald@gmail.com"
             className="link-edit"
             style={{ color: isPaper ? "var(--ink)" : "var(--on-bg)" }}
             data-testid="link-footer-email"
           >
-            hello@acedcases.com
+            hello@acedcases.in
           </a>
         </div>
       </div>

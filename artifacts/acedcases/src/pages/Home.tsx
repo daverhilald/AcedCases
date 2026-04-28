@@ -208,7 +208,7 @@ export default function Home() {
             No subscription. No download button. No "premium tier." Built by
             students, for students. If you won something and want to share,{" "}
             <a
-              href="mailto:submit@acedcases.com"
+              href="mailto:daverhilald@gmail.com"
               className="link-edit"
               style={{ color: "var(--ink)" }}
               data-testid="link-submit-email"
